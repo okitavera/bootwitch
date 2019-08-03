@@ -5,3 +5,6 @@
 /Image.*
 /*.img
 /dtbo*
+
+# Ignore generated zip files by buildzip.sh
+/*.zip
