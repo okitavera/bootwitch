@@ -14,9 +14,9 @@
 
 ### magiskboot
 
-Although bootwitch are powered by `magiskboot`, it doesn't comes with the `magiskboot` binary by default.
-The main purpose of it is so you can decide what version of `magiskboot` do you use (arm/x86).
-So, you need to put your preffered `magiskboot` binary file inside the `external/` folder.
+Although bootwitch are powered by `magiskboot`, it doesn't comes with the `magiskboot` binary by default.<br />
+The main purpose of it is so you can decide what version of `magiskboot` by yourself.<br />
+So, before anything else, you need to put your preferred `magiskboot` binary file inside the `external/` folder.
 
 ### kernel related files
 
@@ -24,19 +24,25 @@ Like anykernel2, you can put your `Image.gz-dtb` (and `dtbo.img` if you also wan
 
 ### Specific kernel configuration (kernel.conf)
 
-There is several things that you can configure in the `kernel.conf`.
+There is several things that you can configure in the [`kernel.conf`](kernel.conf).
 
 ```sh
 kernelid=
 ```
-Used by `buildzip.sh` for naming your zip files. required if you're using `buildzip.sh` for building zip file.
+Used by [`buildzip.sh`](buildzip.sh) for naming your zip files. required if you're using [`buildzip.sh`](buildzip.sh) for building zip file.
 
 ```
 kernelname=
 kernelver=
 kernelauthor=
 ```
-Informations of your kernel release. it will be displayed in the installation process.
+Informations of your kernel release. it will be displayed in the installation process. OR :
+
+```
+banner_mode=
+```
+If you want to use your own banner at [`banner.txt`](banner.txt), you can set `banner_mode` to `custom`.<br />
+It will display the content of [`banner.txt`](banner.txt) instead the default information.
 
 ```
 blk_boot=
@@ -49,14 +55,14 @@ with_dtbo=
 blk_dtbo=
 src_dtbo=
 ```
-If your kernel release also provide the `dtbo.img`, you can enable `with_dtbo=true`.
-Don't forget to set the `dtbo` device block on `blk_dtbo`, and dtbo filename on `src_dtbo`.
+If your kernel release also provide the `dtbo.img`, you can enable `with_dtbo=true`.<br />
+Don't forget to set the `dtbo` device block on `blk_dtbo`, and dtbo filename on `src_dtbo`.<br />
 If not, then just set it to `false`.
 
 ## 📦 Building zip file
 
-bootwitch comes with `buildzip.sh` to generate zip easily.
-If you're already setup all things (`kernel.conf`, `external/magiskboot`, `Image.gz-dtb`, and maybe `dtbo.img`),
+bootwitch comes with [`buildzip.sh`](buildzip.sh) to generate zip easily.<br />
+If you're already setup all things ([`kernel.conf`](kernel.conf), `external/magiskboot`, `Image.gz-dtb`, and maybe `dtbo.img`),<br />
 you can just run the script directly in your `bootwitch` folder.
 
 ```sh
