@@ -13,8 +13,11 @@ zipname=bootwitch-${kernelid// }-$kernelver.zip
 sources=(META-INF
          external
          kernel.conf
-         dtbo.img
-         Image.gz-dtb)
+         $src_kernel)
+
+if [[ "$with_dtbo" == "true" ]]; then
+  sources+=($src_dtbo)
+fi
 
 # prepare working directory in the /tmp
 WORKDIR=/tmp/build-bootwitch-$USER
