@@ -1,0 +1,145 @@
+#!/sbin/sh
+
+# Environmental setup
+OUTFD=/proc/self/fd/$2
+ZIPFILE="$3"
+LC_ALL=C
+LANG=C
+WORKDIR=/tmp/bootwitch
+UNPACKDIR=$WORKDIR/unpack
+
+# Default device values
+blk_boot=/dev/block/bootdevice/by-name/boot
+blk_dtbo=/dev/block/bootdevice/by-name/dtbo
+src_dtbo=$WORKDIR/dtbo.img
+
+# Printing to OUTFD
+ui_print() {
+  echo -e "ui_print $1\nui_print" >> $OUTFD
+}
+
+# Divider
+print_div(){
+  if [[ "$1" == "warn" ]];then
+    ui_print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+  else
+    ui_print "================================="
+  fi
+}
+
+# Checking File
+filecheck(){
+  if [[ ! -f "$1" ]]; then
+    stop "- $1 not found. aborting"
+  fi
+}
+
+# Setup working dir and files
+prepare_env() {
+  rm -rf $WORKDIR
+  mkdir -p $UNPACKDIR
+  cd $WORKDIR
+  unzip -o "$ZIPFILE"
+  export SAVEDPATH=$PATH
+  export PATH="$WORKDIR/external:$PATH"
+  which magiskboot || stop "- magiskboot not found. aborting"
+}
+
+# Get "player" configuration
+get_conf() {
+  if [[ ! -f "$WORKDIR/kernel.conf" ]]; then
+    stop "- kernel.conf not found. aborting"
+  fi
+
+  source $WORKDIR/kernel.conf
+
+  # Checking kernel file
+  filecheck $WORKDIR/$src_kernel
+
+  # Checking dtbo if it's configured
+  if [[ "$with_dtbo" == "true" ]]; then
+    filecheck $WORKDIR/$src_dtbo
+  fi
+}
+
+stop(){
+  # If stop is called with message
+  # then it's an abortion
+  if [[ "$1" ]]; then
+    print_div warn
+    ui_print "$1"
+  fi
+
+  ui_print "- Cleanup temporary files"
+  rm -rf $WORKDIR
+
+  [[ "$SAVEDPATH" ]] && export PATH=$SAVEDPATH
+
+  if [[ "$1" ]]; then
+    print_div warn
+    exit 1
+  else
+    ui_print "- Installation complete"
+    ui_print " "
+    exit 0
+  fi
+}
+
+get_boot() {
+  ui_print "- Dump current boot.img from boot partition"
+  cat $blk_boot > $WORKDIR/boot.img 2>/dev/null
+}
+
+unpack_boot() {
+  ui_print "- Unpacking boot.img"
+  cd $UNPACKDIR
+  magiskboot unpack -h $WORKDIR/boot.img
+}
+
+replace_kernel(){
+  ui_print "- Replacing old kernel with a new one"
+  cat $WORKDIR/$src_kernel > $UNPACKDIR/kernel 2>/dev/null
+  rm -f $UNPACKDIR/kernel_dtb
+}
+
+repack_boot() {
+  cd $UNPACKDIR
+  ui_print "- Packing boot.img"
+  magiskboot repack -n $WORKDIR/boot.img $WORKDIR/boot-new.img
+}
+
+install_boot(){
+  ui_print "- Installing a new boot.img"
+  cat $WORKDIR/boot-new.img /dev/zero > $blk_boot 2>/dev/null
+}
+
+install_dtbo() {
+  if [[ "$with_dtbo" == "true" ]]; then
+    ui_print "- Installing dtbo.img"
+    cat $WORKDIR/$src_dtbo /dev/zero > $blk_dtbo 2>/dev/null
+  fi
+}
+
+main(){
+  print_div
+  ui_print "           bootwitch             "
+  ui_print " Magisk-powered Kernel Installer "
+  prepare_env
+  get_conf
+  print_div
+  ui_print " $kernelname"
+  ui_print " Version : $kernelver"
+  ui_print " Author  : $kernelauthor"
+  print_div
+  ui_print "- Begin installation"
+  get_boot
+  unpack_boot
+  replace_kernel
+  repack_boot
+  install_boot
+  install_dtbo
+} 
+
+ui_print " "
+main "$@"
+stop

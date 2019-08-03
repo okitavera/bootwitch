@@ -1,0 +1,7 @@
+# Ignore magiskboot binary files from source tree
+/external/magiskboot
+
+# Ignore kernel related files
+/Image.*
+/*.img
+/dtbo*
