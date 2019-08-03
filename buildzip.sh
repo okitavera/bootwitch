@@ -19,6 +19,10 @@ if [[ "$with_dtbo" == "true" ]]; then
   sources+=($src_dtbo)
 fi
 
+if [[ "$banner_mode" == "custom" ]]; then
+  sources+=(banner.txt)
+fi
+
 # prepare working directory in the /tmp
 WORKDIR=/tmp/build-bootwitch-$USER
 rm -rf $WORKDIR

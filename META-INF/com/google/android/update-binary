@@ -59,9 +59,15 @@ get_conf() {
 # Display regular information based on kernel.conf
 draw_info(){
   ui_return
-  ui_print " $kernelname"
-  ui_print " Version : $kernelver"
-  ui_print " Author  : $kernelauthor"
+  if [[ "$banner_mode" == "custom" && -f "$WORKDIR/banner.txt" ]]; then
+    TFS=$IFS; IFS=$'\n'; for i in $(cat $WORKDIR/banner.txt); do
+      ui_print "$i"
+    done; IFS=$TFS
+  else
+    ui_print " $kernelname"
+    ui_print " Version : $kernelver"
+    ui_print " Author  : $kernelauthor"
+  fi
   ui_return
 }
 
