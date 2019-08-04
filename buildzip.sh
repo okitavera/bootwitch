@@ -3,8 +3,15 @@
 # Simple script for builing zip file
 #
 
+[[ -f "./kernel.conf" ]] || { echo "./kernel.conf cannot be found. exiting"; exit 1; }
 # get kernel.conf for id and version information
 source ./kernel.conf
+
+# Requirement checking
+[[ -f "./external/magiskboot" ]] || { echo "./external/magiskboot cannot be found. exiting"; exit 1; }
+[[ -f "$src_kernel" ]] || { echo "src_kernel ($src_kernel) cannot be found. exiting"; exit 1; }
+[[ "$kernelid" ]] || { echo "kernelid cannot be found. exiting"; exit 1; }
+[[ "$kernelver" ]] || { echo "kernelver cannot be found. exiting"; exit 1; }
 
 # Setup file zip name
 zipname=bootwitch-${kernelid// }-$kernelver.zip
