@@ -60,9 +60,9 @@ get_conf() {
 draw_info(){
   ui_return
   if [[ "$banner_mode" == "custom" && -f "$WORKDIR/banner.txt" ]]; then
-    TFS=$IFS; IFS=$'\n'; for i in $(cat $WORKDIR/banner.txt); do
+    while IFS=$'\n'; read -r i; do
       ui_print "$i"
-    done; IFS=$TFS
+    done < "$WORKDIR/banner.txt"
   else
     ui_print " $kernelname"
     ui_print " Version : $kernelver"
