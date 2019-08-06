@@ -59,6 +59,14 @@ If your kernel release also provide the `dtbo.img`, you can enable `with_dtbo=tr
 Don't forget to set the `dtbo` device block on `blk_dtbo`, and dtbo filename on `src_dtbo`.<br />
 If not, then just set it to `false`.
 
+```
+preserve_magisk=
+```
+Mostly, custom kernel on system-as-root devices doesn't patch their initramfs.c ([@okitavera](https://github.com/okitavera) does, hehehe).<br />
+Basically, in order preserve magisk functionality on system-as-root device, you need to hexpatch it like Magisk does.<br />
+But don't worry, we got you.<br />
+You just need to set it `true` to let the witch (and of course, `magiskboot`) does the job.
+
 ## 📦 Building zip file
 
 bootwitch comes with [`buildzip.sh`](buildzip.sh) to generate zip easily.<br />
