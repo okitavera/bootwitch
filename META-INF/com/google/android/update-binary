@@ -7,6 +7,7 @@ LC_ALL=C
 LANG=C
 WORKDIR=/tmp/bootwitch
 UNPACKDIR=$WORKDIR/unpack
+HEXPATCHDIR=$WORKDIR/hexpatch
 
 # Default device values
 blk_boot=/dev/block/bootdevice/by-name/boot
@@ -117,6 +118,30 @@ repack_boot() {
   magiskboot repack -n $WORKDIR/boot.img $WORKDIR/boot-new.img
 }
 
+magisk_repatch() {
+  if [[ "$preserve_magisk" == "true" ]]; then
+    mkdir -p $HEXPATCHDIR
+    cd $HEXPATCHDIR
+    magiskboot unpack $WORKDIR/boot-new.img
+
+    if [ -e ramdisk.cpio ]; then
+      magiskboot cpio ramdisk.cpio test
+      STATUS=$?
+    else
+      STATUS=0
+    fi
+
+    if [[ "$STATUS" == "1" ]]; then
+      ui_print ":: Magisk detected, re-patching kernel"
+      magiskboot hexpatch kernel 736B69705F696E697472616D667300 77616E745F696E697472616D667300
+      magiskboot repack $WORKDIR/boot-new.img $WORKDIR/boot-new-patched.img
+      mv -f $WORKDIR/boot-new-patched.img $WORKDIR/boot-new.img
+    else
+      ui_print ":: No magisk detected, continue to install"
+    fi
+  fi
+}
+
 install_boot(){
   ui_print ":: Installing a new boot.img"
   cat $WORKDIR/boot-new.img /dev/zero > $blk_boot 2>/dev/null
@@ -138,6 +163,7 @@ main(){
   unpack_boot
   replace_kernel
   repack_boot
+  magisk_repatch
   install_boot
   install_dtbo
 } 
