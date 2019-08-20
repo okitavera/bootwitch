@@ -67,6 +67,17 @@ Basically, in order preserve magisk functionality on system-as-root device, you 
 But don't worry, we got you.<br />
 You just need to set it `true` to let the witch (and of course, `magiskboot`) does the job.
 
+```
+before_process() {
+  ....
+}
+after_process() {
+  ....
+}
+```
+This is an optional function that will be invoked before/after the whole process happens<br />
+You can use it for example: device checking, backing-up files, etc.
+
 ## 📦 Building zip file
 
 bootwitch comes with [`buildzip.sh`](buildzip.sh) to generate zip easily.<br />
