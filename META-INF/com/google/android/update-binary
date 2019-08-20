@@ -153,6 +153,7 @@ main(){
   prepare_env
   get_conf
   draw_info
+  before_process
   get_boot
   unpack_boot
   replace_kernel
@@ -160,6 +161,7 @@ main(){
   magisk_repatch
   install_boot
   install_dtbo
+  after_process
 } 
 
 trap ui_return EXIT SIGHUP
