@@ -8,7 +8,7 @@
 
 # replace kernel version with actual version
 generatedver=$(cat $KBUILD_OUT/include/generated/utsrelease.h | cut -d\" -f2 | cut -d\- -f3)
-sed -i -e "s/kernelver=.*/kernelver=$generatedver/g" ./kernel.conf
+sed -i -e "s/kernelver=.*/kernelver=\"$generatedver\"/g" ./kernel.conf
 
 [[ -f "./kernel.conf" ]] || { echo "./kernel.conf cannot be found. exiting"; exit 1; }
 # get kernel.conf for id and version information
