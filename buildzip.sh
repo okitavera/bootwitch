@@ -61,3 +61,14 @@ cp -v $WORKDIR/$zipname $(pwd)/
 
 # cleanup working directory
 rm -rf $WORKDIR
+
+# send it to my device
+command -v adb >/dev/null 2>&1 || exit 0
+if [[ "$(adb get-state)" != "offline" ]]; then
+    read -p ":: Push $zipname to /sdcard/ ? (y/n) > " ASKPUSH
+    [[ $ASKPUSH =~ ^[Yy]$ ]] && adb push $zipname /sdcard/
+fi
+if [[ "$(adb get-state)" == "device" ]]; then
+    read -p ":: Reboot to recovery ? (y/n) > " ASKREC
+    [[ $ASKREC =~ ^[Yy]$ ]] && echo "rebooting to recovery..." && adb reboot recovery
+fi
