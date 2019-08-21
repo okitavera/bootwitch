@@ -30,6 +30,7 @@ zipname=${kernelid// }-$kernelver-Mi9SE.zip
 # Setup folder and files that will be included in the zip
 sources=(META-INF
          external
+         addons
          kernel.conf
          $src_kernel)
 
