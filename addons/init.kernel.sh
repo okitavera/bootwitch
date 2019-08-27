@@ -24,6 +24,9 @@ if ! grep 'okita' /proc/version 2>&1 /dev/null; then
   exit 5
 fi
 
+chmod 600 /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
+chown system:system /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
+
 magiskpolicy --live "allow * vendor_camera_prop file { read open getattr map }"
 magiskpolicy --live "allow * camera_prop file { read open getattr map }"
 magiskpolicy --live "allow * hal_fingerprint_hwservice hwservice_manager { find }"
