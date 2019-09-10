@@ -52,9 +52,9 @@ write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor schedutil
 write /sys/devices/system/cpu/cpufreq/policy6/scaling_governor schedutil
 
 # Mimick Pixel ratelimits
-write /sys/devices/system/cpu/cpufreq/policy0/schedutil/up_rate_limit_us 500 
+write /sys/devices/system/cpu/cpufreq/policy0/schedutil/up_rate_limit_us 500
 write /sys/devices/system/cpu/cpufreq/policy0/schedutil/down_rate_limit_us 20000
-write /sys/devices/system/cpu/cpufreq/policy6/schedutil/up_rate_limit_us 500 
+write /sys/devices/system/cpu/cpufreq/policy6/schedutil/up_rate_limit_us 500
 write /sys/devices/system/cpu/cpufreq/policy6/schedutil/down_rate_limit_us 20000
 
 # Set the default IRQ affinity to the silver cluster.
@@ -73,7 +73,7 @@ write /sys/module/lpm_levels/parameters/sleep_disabled 0
 
 # Enable idle state listener
 write /sys/class/drm/card0/device/idle_encoder_mask 1
-write /sys/class/drm/card0/device/idle_timeout_ms 100
+write /sys/class/drm/card0/device/idle_timeout_ms 64
 
 # Prepare SchedTune
 ## rt
@@ -116,8 +116,9 @@ write /dev/stune/schedtune.prefer_idle 0
 write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost 20
 
 # Setup Memory Management
-write /proc/sys/vm/dirty_ratio 60
-write /proc/sys/vm/dirty_background_ratio 6
+write /proc/sys/vm/dirty_ratio 80
+write /proc/sys/vm/dirty_expire_centisecs 3000
+write /proc/sys/vm/dirty_background_ratio 8
 write /proc/sys/vm/page-cluster 0
 write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 0
 
