@@ -43,9 +43,7 @@ while true; do
   fi
 done
 
-# Disable CPU Retention
-write /sys/module/lpm_levels/L3/cpu0/ret/idle_enabled N
-write /sys/module/lpm_levels/L3/cpu6/ret/idle_enabled N
+sleep 3
 
 # Reset to schedutil
 write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor schedutil
@@ -111,9 +109,6 @@ write /dev/stune/schedtune.sched_boost_enabled 1
 write /dev/stune/schedtune.sched_boost_no_override 0 
 write /dev/stune/schedtune.colocate 0 
 write /dev/stune/schedtune.prefer_idle 0
-
-# Setup Dynamic SchedTune
-write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost 20
 
 # Setup Memory Management
 write /proc/sys/vm/dirty_ratio 80
