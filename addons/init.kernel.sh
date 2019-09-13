@@ -123,9 +123,14 @@ chmod 644 /sys/class/thermal/thermal_message/sconfig
 write /sys/class/thermal/thermal_message/sconfig 16
 chmod 444 /sys/class/thermal/thermal_message/sconfig
 
-# Reset io readahead
-write /sys/block/sda/queue/read_ahead_kb 256
-write /sys/block/sdf/queue/read_ahead_kb 128
+# Unify all blocks setup
+for i in /sys/block/*/queue; do
+  write $i/read_ahead_kb 256
+  write $i/add_random 0
+  write $i/iostats 0
+  write $i/rotational 0
+  write $i/scheduler cfq
+done
 
 # Reset entropy values
 write /proc/sys/kernel/random/read_wakeup_threshold 64
