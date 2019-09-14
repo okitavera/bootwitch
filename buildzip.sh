@@ -2,14 +2,15 @@
 #
 # Simple script for builing zip file
 #
+SELFPATH=$(dirname $(realpath $0))
 
-[[ -f "./kernel.conf" ]] || { echo "./kernel.conf cannot be found. exiting"; exit 1; }
+[[ -f "$SELFPATH/kernel.conf" ]] || { echo "kernel.conf cannot be found. exiting"; exit 1; }
 # get kernel.conf for id and version information
-source ./kernel.conf
+source $SELFPATH/kernel.conf
 
 # Requirement checking
-[[ -f "./external/magiskboot" ]] || { echo "./external/magiskboot cannot be found. exiting"; exit 1; }
-[[ -f "$src_kernel" ]] || { echo "src_kernel ($src_kernel) cannot be found. exiting"; exit 1; }
+[[ -f "$SELFPATH/external/magiskboot" ]] || { echo "external/magiskboot cannot be found. exiting"; exit 1; }
+[[ -f "$SELFPATH/$src_kernel" ]] || { echo "$src_kernel cannot be found. exiting"; exit 1; }
 [[ "$kernelid" ]] || { echo "kernelid cannot be found. exiting"; exit 1; }
 [[ "$kernelver" ]] || { echo "kernelver cannot be found. exiting"; exit 1; }
 
@@ -17,17 +18,17 @@ source ./kernel.conf
 zipname=bootwitch-${kernelid// }-$kernelver.zip
 
 # Setup folder and files that will be included in the zip
-sources=(META-INF
-         external
-         kernel.conf
-         $src_kernel)
+sources=($SELFPATH/META-INF
+         $SELFPATH/external
+         $SELFPATH/kernel.conf
+         $SELFPATH/$src_kernel)
 
 if [[ "$with_dtbo" == "true" ]]; then
-  sources+=($src_dtbo)
+  sources+=($SELFPATH/$src_dtbo)
 fi
 
 if [[ "$banner_mode" == "custom" ]]; then
-  sources+=(banner.txt)
+  sources+=($SELFPATH/banner.txt)
 fi
 
 # prepare working directory in the /tmp
@@ -46,7 +47,7 @@ command pushd "$WORKDIR" > /dev/null
 command popd > /dev/null
 
 # copy generated zip file to current directory
-cp -v $WORKDIR/$zipname $(pwd)/
+cp -v $WORKDIR/$zipname $SELFPATH/
 
 # cleanup working directory
 rm -rf $WORKDIR
