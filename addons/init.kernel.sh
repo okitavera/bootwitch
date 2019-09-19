@@ -30,9 +30,11 @@ magiskpolicy --live "allow * vendor_camera_prop file { read open getattr map }"
 magiskpolicy --live "allow * camera_prop file { read open getattr map }"
 magiskpolicy --live "allow * hal_fingerprint_hwservice hwservice_manager { find }"
 
-# Setup proper permission for DC-dimming knob
+# Setup proper permission for DC-dimming and FOD knob
 chmod 600 /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
 chown system:system /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
+chmod 666 /sys/devices/virtual/touch/tp_dev/fod_status
+chown system:system /sys/devices/virtual/touch/tp_dev/fod_status
 
 # wait until boot is complete
 while true; do 
@@ -45,15 +47,13 @@ done
 
 sleep 3
 
-# Reset to schedutil
-write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor schedutil
-write /sys/devices/system/cpu/cpufreq/policy6/scaling_governor schedutil
-
-# Mimick Pixel ratelimits
-write /sys/devices/system/cpu/cpufreq/policy0/schedutil/up_rate_limit_us 500
-write /sys/devices/system/cpu/cpufreq/policy0/schedutil/down_rate_limit_us 20000
-write /sys/devices/system/cpu/cpufreq/policy6/schedutil/up_rate_limit_us 500
-write /sys/devices/system/cpu/cpufreq/policy6/schedutil/down_rate_limit_us 20000
+for cpu in /sys/devices/system/cpu/cpufreq/*; do
+  write $cpu/scaling_min_freq 300000
+  write $cpu/scaling_governor schedutil
+  write $cpu/schedutil/iowait_boost_enable 0
+  write $cpu/schedutil/up_rate_limit_us 500
+  write $cpu/schedutil/down_rate_limit_us 20000
+done
 
 # Set the default IRQ affinity to the silver cluster.
 write /proc/irq/default_smp_affinity 3f
@@ -72,43 +72,6 @@ write /sys/module/lpm_levels/parameters/sleep_disabled 0
 # Enable idle state listener
 write /sys/class/drm/card0/device/idle_encoder_mask 1
 write /sys/class/drm/card0/device/idle_timeout_ms 64
-
-# Prepare SchedTune
-## rt
-write /dev/stune/rt/schedtune.boost 0 
-write /dev/stune/rt/schedtune.sched_boost 0 
-write /dev/stune/rt/schedtune.sched_boost_enabled 1 
-write /dev/stune/rt/schedtune.sched_boost_no_override 0 
-write /dev/stune/rt/schedtune.colocate 0 
-write /dev/stune/rt/schedtune.prefer_idle 0
-## foreground
-write /dev/stune/foreground/schedtune.boost 0 
-write /dev/stune/foreground/schedtune.sched_boost 0 
-write /dev/stune/foreground/schedtune.sched_boost_enabled 1 
-write /dev/stune/foreground/schedtune.sched_boost_no_override 1 
-write /dev/stune/foreground/schedtune.colocate 0 
-write /dev/stune/foreground/schedtune.prefer_idle 1
-## background
-write /dev/stune/background/schedtune.boost 0 
-write /dev/stune/background/schedtune.sched_boost 0 
-write /dev/stune/background/schedtune.sched_boost_enabled 0 
-write /dev/stune/background/schedtune.sched_boost_no_override 1 
-write /dev/stune/background/schedtune.colocate 0 
-write /dev/stune/background/schedtune.prefer_idle 0
-## top-app
-write /dev/stune/top-app/schedtune.boost 0
-write /dev/stune/top-app/schedtune.sched_boost 0 
-write /dev/stune/top-app/schedtune.sched_boost_enabled 1 
-write /dev/stune/top-app/schedtune.sched_boost_no_override 0 
-write /dev/stune/top-app/schedtune.colocate 1 
-write /dev/stune/top-app/schedtune.prefer_idle 0
-## global
-write /dev/stune/schedtune.boost 0 
-write /dev/stune/schedtune.sched_boost 0 
-write /dev/stune/schedtune.sched_boost_enabled 1 
-write /dev/stune/schedtune.sched_boost_no_override 0 
-write /dev/stune/schedtune.colocate 0 
-write /dev/stune/schedtune.prefer_idle 0
 
 # Setup Memory Management
 write /proc/sys/vm/dirty_ratio 80
@@ -135,11 +98,6 @@ done
 # Reset entropy values
 write /proc/sys/kernel/random/read_wakeup_threshold 64
 write /proc/sys/kernel/random/write_wakeup_threshold 128
-
-# Setup final blkio
-write /dev/blkio/blkio.weight 1000
-write /dev/blkio/background/blkio.weight 10
-write /dev/blkio/bg/blkio.weight 10
 
 # reduce debugging
 write /sys/module/printk/parameters/console_suspend 1
