@@ -99,10 +99,5 @@ done
 write /proc/sys/kernel/random/read_wakeup_threshold 64
 write /proc/sys/kernel/random/write_wakeup_threshold 128
 
-# reduce debugging
+# allow console suspend
 write /sys/module/printk/parameters/console_suspend 1
-for i in $(find /sys/module/ -type f -iname debug_mask); do
-	write $i 0;
-done
-
-exit 0
