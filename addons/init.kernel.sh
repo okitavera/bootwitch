@@ -33,8 +33,10 @@ magiskpolicy --live "allow * hal_fingerprint_hwservice hwservice_manager { find 
 # Setup proper permission for DC-dimming and FOD knob
 chmod 600 /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
 chown system:system /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
-chmod 666 /sys/devices/virtual/touch/tp_dev/fod_status
-chown system:system /sys/devices/virtual/touch/tp_dev/fod_status
+
+write /sys/module/iasb/parameters/boost_percent 15
+write /sys/module/iasb/parameters/boost_duration_ms 300
+write /sys/module/iasb/parameters/min_touch_duration_ms 300 
 
 # wait until boot is complete
 while true; do 
@@ -52,11 +54,8 @@ for cpu in /sys/devices/system/cpu/cpufreq/*; do
   write $cpu/scaling_governor schedutil
   write $cpu/schedutil/iowait_boost_enable 0
   write $cpu/schedutil/up_rate_limit_us 500
-  write $cpu/schedutil/down_rate_limit_us 20000
+  write $cpu/schedutil/down_rate_limit_us 5000
 done
-
-# Set the default IRQ affinity to the silver cluster.
-write /proc/irq/default_smp_affinity 3f
 
 # Setup cpuset
 write /dev/cpuset/top-app/cpus 0-7
@@ -78,7 +77,6 @@ write /proc/sys/vm/dirty_ratio 80
 write /proc/sys/vm/dirty_expire_centisecs 3000
 write /proc/sys/vm/dirty_background_ratio 8
 write /proc/sys/vm/page-cluster 0
-write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 0
 
 # Reset default thermal config
 tmsc=/sys/class/thermal/thermal_message/sconfig
