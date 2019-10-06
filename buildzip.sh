@@ -26,7 +26,7 @@ src_dtbo=$KBUILD_OUT/$src_dtbo
 [[ "$kernelver" ]] || { echo "kernelver cannot be found. exiting"; exit 1; }
 
 # Setup file zip name
-zipname=${kernelid// }-$kernelver-Mi9SE.zip
+zipname=${kernelid// /-}-$kernelver-Mi9SE.zip
 
 # Setup folder and files that will be included in the zip
 sources=($SELFPATH/META-INF
