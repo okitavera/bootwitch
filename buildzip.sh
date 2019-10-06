@@ -15,7 +15,7 @@ source $SELFPATH/kernel.conf
 [[ "$kernelver" ]] || { echo "kernelver cannot be found. exiting"; exit 1; }
 
 # Setup file zip name
-zipname=bootwitch-${kernelid// }-$kernelver.zip
+zipname=bootwitch-${kernelid// /-}-$kernelver.zip
 
 # Setup folder and files that will be included in the zip
 sources=($SELFPATH/META-INF
