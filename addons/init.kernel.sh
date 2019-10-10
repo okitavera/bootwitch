@@ -45,13 +45,20 @@ done
 
 sleep 3
 
-for cpu in /sys/devices/system/cpu/cpufreq/*; do
-  write $cpu/scaling_min_freq 300000
-  write $cpu/scaling_governor schedutil
-  write $cpu/schedutil/iowait_boost_enable 0
-  write $cpu/schedutil/up_rate_limit_us 500
-  write $cpu/schedutil/down_rate_limit_us 5000
-done
+cpuA=/sys/devices/system/cpu/cpufreq/policy0
+cpuB=/sys/devices/system/cpu/cpufreq/policy6
+
+write $cpuA/scaling_min_freq 300000
+write $cpuA/scaling_governor schedutil
+write $cpuA/schedutil/iowait_boost_enable 0
+write $cpuA/schedutil/up_rate_limit_us 500
+write $cpuA/schedutil/down_rate_limit_us 5000
+
+write $cpuB/scaling_min_freq 300000
+write $cpuB/scaling_governor schedutil
+write $cpuB/schedutil/iowait_boost_enable 0
+write $cpuB/schedutil/up_rate_limit_us 5000
+write $cpuB/schedutil/down_rate_limit_us 500
 
 # Setup cpuset
 write /dev/cpuset/top-app/cpus 0-7
