@@ -34,10 +34,6 @@ magiskpolicy --live "allow * hal_fingerprint_hwservice hwservice_manager { find 
 chmod 600 /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
 chown system:system /sys/devices/platform/soc/soc:qcom,dsi-display@18/msm_fb_ea_enable
 
-write /sys/module/iasb/parameters/boost_percent 15
-write /sys/module/iasb/parameters/boost_duration_ms 300
-write /sys/module/iasb/parameters/min_touch_duration_ms 300 
-
 # wait until boot is complete
 while true; do 
   if [[ "$(getprop sys.boot_completed)" == "1" ]]; then
