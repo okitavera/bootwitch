@@ -51,29 +51,18 @@ cpuB=/sys/devices/system/cpu/cpufreq/policy6
 write $cpuA/scaling_min_freq 300000
 write $cpuA/scaling_governor schedutil
 write $cpuA/schedutil/iowait_boost_enable 0
-write $cpuA/schedutil/up_rate_limit_us 500
-write $cpuA/schedutil/down_rate_limit_us 5000
+write $cpuA/schedutil/up_rate_limit_us 1000
+write $cpuA/schedutil/down_rate_limit_us 1000
+write $cpuA/blu_schedutil/up_rate_limit_us 20000
+write $cpuA/blu_schedutil/down_rate_limit_us 500
 
 write $cpuB/scaling_min_freq 300000
 write $cpuB/scaling_governor schedutil
 write $cpuB/schedutil/iowait_boost_enable 0
-write $cpuB/schedutil/up_rate_limit_us 5000
-write $cpuB/schedutil/down_rate_limit_us 500
-
-# Setup cpuset
-write /dev/cpuset/top-app/cpus 0-7
-write /dev/cpuset/camera-daemon/cpus 0-7
-write /dev/cpuset/foreground/cpus 0-5,7
-write /dev/cpuset/background/cpus 4-5
-write /dev/cpuset/system-background/cpus 2-5
-write /dev/cpuset/restricted/cpus 2-5
-
-# Turn on sleep modes.
-write /sys/module/lpm_levels/parameters/sleep_disabled 0
-
-# Enable idle state listener
-write /sys/class/drm/card0/device/idle_encoder_mask 1
-write /sys/class/drm/card0/device/idle_timeout_ms 64
+write $cpuB/schedutil/up_rate_limit_us 2000
+write $cpuB/schedutil/down_rate_limit_us 1000
+write $cpuA/blu_schedutil/up_rate_limit_us 20000
+write $cpuA/blu_schedutil/down_rate_limit_us 500
 
 # Setup Memory Management
 write /proc/sys/vm/dirty_ratio 80
@@ -82,7 +71,6 @@ write /proc/sys/vm/dirty_background_ratio 8
 write /proc/sys/vm/page-cluster 0
 
 # Reset default thermal config
-tmsc=/sys/class/thermal/thermal_message/sconfig
 chmod 644 /sys/class/thermal/thermal_message/sconfig
 write /sys/class/thermal/thermal_message/sconfig 16
 chmod 444 /sys/class/thermal/thermal_message/sconfig
@@ -97,7 +85,7 @@ for i in /sys/block/*/queue; do
 done
 
 # Reset entropy values
-write /proc/sys/kernel/random/read_wakeup_threshold 64
+write /proc/sys/kernel/random/read_wakeup_threshold 128
 write /proc/sys/kernel/random/write_wakeup_threshold 128
 
 # allow console suspend
